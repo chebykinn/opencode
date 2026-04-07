@@ -1,0 +1,15 @@
+Spawn a new subagent to handle a task asynchronously. The agent runs in a separate session and does not block the current session.
+
+Use this tool to delegate work to subagents. Multiple agents can be spawned concurrently by calling this tool multiple times in a single response.
+
+Available agent types:
+{agents}
+
+Parameters:
+- description: A short (3-5 word) label for the agent's task
+- prompt: Detailed instructions for what the agent should do
+- agent: Which agent type to use (e.g., "build", "explore", "general")
+- mode: "spawn" (default) creates a fresh session; "fork" inherits the current conversation context
+- task_id: Optional - resume an existing subagent session instead of creating a new one
+
+The tool returns immediately with the agent's session ID and slug. Use `list_agents` or `wait_agents` to monitor progress, and `read_agent` to inspect results.

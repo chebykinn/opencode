@@ -1,0 +1,7 @@
+Send a followup message to an existing subagent session.
+
+Use this to provide corrections, additional instructions, or ask the agent to continue its work. The message is sent asynchronously - the tool returns immediately.
+
+Parameters:
+- session_id: The session ID or slug of the subagent
+- message: The followup message to send

@@ -1,0 +1,9 @@
+Follow a running subagent's output in real-time.
+
+This tool streams the subagent's output as it is produced, returning new text each time it appears. It blocks until either the agent finishes or the timeout is reached.
+
+Use this to monitor what a subagent is doing while it works. The output is returned verbatim — exactly what the agent produces.
+
+Parameters:
+- session_id: Session ID or slug of the subagent to follow
+- timeout: Max time to follow in seconds (default: 60)

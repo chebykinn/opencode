@@ -1,0 +1,11 @@
+Attach to a running subagent's session interactively.
+
+This navigates the TUI to the subagent's session view where you can:
+- See the agent's output streaming in real-time
+- Send messages directly to the agent
+- Use the Parent keybind (shown in footer) to return to the coordinator
+
+Use this when you need to interact directly with a subagent — answer its questions, provide input, or monitor its work closely.
+
+Parameters:
+- session_id: Session ID or slug of the subagent to attach to

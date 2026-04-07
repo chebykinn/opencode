@@ -10,6 +10,7 @@ import { ProviderTransform } from "../provider/transform"
 
 import PROMPT_GENERATE from "./generate.txt"
 import PROMPT_COMPACTION from "./prompt/compaction.txt"
+import PROMPT_COORDINATOR from "./prompt/coordinator.txt"
 import PROMPT_EXPLORE from "./prompt/explore.txt"
 import PROMPT_SUMMARY from "./prompt/summary.txt"
 import PROMPT_TITLE from "./prompt/title.txt"
@@ -183,6 +184,33 @@ export namespace Agent {
               prompt: PROMPT_EXPLORE,
               options: {},
               mode: "subagent",
+              native: true,
+            },
+            coordinator: {
+              name: "coordinator",
+              description:
+                "Coordinator agent that decomposes tasks and spawns subagents for parallel execution. Does not edit files directly.",
+              prompt: PROMPT_COORDINATOR,
+              permission: Permission.merge(
+                defaults,
+                Permission.fromConfig({
+                  "*": "deny",
+                  read: "allow",
+                  glob: "allow",
+                  grep: "allow",
+                  spawn_agent: "allow",
+                  list_agents: "allow",
+                  read_agent: "allow",
+                  send_followup: "allow",
+                  wait_agents: "allow",
+                  follow_agent: "allow",
+                  attach_agent: "allow",
+                  question: "allow",
+                }),
+                user,
+              ),
+              options: {},
+              mode: "primary",
               native: true,
             },
             compaction: {

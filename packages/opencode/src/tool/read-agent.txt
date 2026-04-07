@@ -1,0 +1,11 @@
+Read detailed information from a subagent session.
+
+Use this to inspect a subagent's work after it completes (or while it's running).
+
+Parameters:
+- session_id: The session ID or slug of the subagent to read
+- include: What information to retrieve:
+  - "summary" (default): Title, status, and change summary (additions/deletions/files)
+  - "output": The last assistant response text from the agent
+  - "messages": The last several messages from the agent's conversation
+  - "diff": File changes made by the agent

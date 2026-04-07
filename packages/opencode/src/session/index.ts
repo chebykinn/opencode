@@ -884,4 +884,12 @@ export namespace Session {
     z.object({ sessionID: SessionID.zod, modelID: ModelID.zod, providerID: ProviderID.zod, messageID: MessageID.zod }),
     (input) => runPromise((svc) => svc.initialize(input)),
   )
+
+  export async function getBySlug(slug: string): Promise<Info> {
+    const row = Database.use((d) =>
+      d.select().from(SessionTable).where(eq(SessionTable.slug, slug)).get(),
+    )
+    if (!row) throw new NotFoundError({ message: `Session not found with slug: ${slug}` })
+    return fromRow(row)
+  }
 }

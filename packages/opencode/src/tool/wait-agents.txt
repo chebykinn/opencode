@@ -1,0 +1,9 @@
+Wait for one or more subagents to finish their work.
+
+This tool blocks until the specified agents are idle (completed or errored). If no session IDs are provided, it waits for all child agents of the current session.
+
+Use this after spawning agents to efficiently wait for results without polling. After waiting completes, use `read_agent` to inspect individual results.
+
+Parameters:
+- session_ids: Optional array of session IDs to wait for. If omitted, waits for all children.
+- timeout: Optional timeout in seconds (default: 300).

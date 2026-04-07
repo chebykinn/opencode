@@ -46,6 +46,10 @@ import type { WebFetchTool } from "@/tool/webfetch"
 import type { TaskTool } from "@/tool/task"
 import type { QuestionTool } from "@/tool/question"
 import type { SkillTool } from "@/tool/skill"
+import type { SpawnAgentTool } from "@/tool/spawn-agent"
+import type { ListAgentsTool } from "@/tool/list-agents"
+import type { ReadAgentTool } from "@/tool/read-agent"
+import type { FollowAgentTool } from "@/tool/follow-agent"
 import { useKeyboard, useRenderer, useTerminalDimensions, type JSX } from "@opentui/solid"
 import { useSDK } from "@tui/context/sdk"
 import { useCommandDialog } from "@tui/component/dialog-command"
@@ -1558,6 +1562,29 @@ function ToolPart(props: { last: boolean; part: ToolPart; message: AssistantMess
         <Match when={props.part.tool === "skill"}>
           <Skill {...toolprops} />
         </Match>
+        <Match when={props.part.tool === "spawn_agent"}>
+          <SpawnAgent {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "list_agents"}>
+          <AgentOutput {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "read_agent"}>
+          <AgentOutput {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "follow_agent"}>
+          <AgentOutput {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "attach_agent"}>
+          <AgentOutput {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "send_followup"}>
+          <InlineTool icon="↳" complete={props.part.state.status === "completed"} pending="Sending followup..." part={props.part}>
+            send_followup {input(toolprops.input)}
+          </InlineTool>
+        </Match>
+        <Match when={props.part.tool === "wait_agents"}>
+          <AgentOutput {...toolprops} />
+        </Match>
         <Match when={true}>
           <GenericTool {...toolprops} />
         </Match>
@@ -1945,6 +1972,66 @@ function WebSearch(props: ToolProps<any>) {
     <InlineTool icon="◈" pending="Searching web..." complete={input.query} part={props.part}>
       Exa Web Search "{input.query}" <Show when={metadata.numResults}>({metadata.numResults} results)</Show>
     </InlineTool>
+  )
+}
+
+function SpawnAgent(props: ToolProps<typeof SpawnAgentTool>) {
+  const { navigate } = useRoute()
+  const { theme } = useTheme()
+  const isRunning = createMemo(() => props.part.state.status === "running")
+  const slug = createMemo(() => (props.metadata as any)?.slug ?? "")
+
+  return (
+    <InlineTool
+      icon="⊕"
+      spinner={isRunning()}
+      complete={props.input.description}
+      pending="Spawning agent..."
+      part={props.part}
+      onClick={() => {
+        const sid = (props.metadata as any)?.sessionId
+        if (sid) navigate({ type: "session", sessionID: sid })
+      }}
+    >
+      {Locale.titlecase(props.input.agent ?? "agent")} — {props.input.description}
+      <Show when={slug()}>{" "}({slug()})</Show>
+    </InlineTool>
+  )
+}
+
+function AgentOutput(props: ToolProps<any>) {
+  const ctx = use()
+  const { theme, syntax } = useTheme()
+  // Use tool output when completed, fall back to metadata.output for live streaming (follow_agent)
+  const output = createMemo(() => (props.output?.trim() || (props.metadata as any)?.output?.trim()) ?? "")
+  const isRunning = createMemo(() => props.part.state.status === "running")
+  const title = createMemo(() => {
+    if (props.part.state.status !== "pending" && "title" in props.part.state)
+      return props.part.state.title as string
+    return `${props.tool} ${input(props.input)}`
+  })
+
+  return (
+    <Show
+      when={output()}
+      fallback={
+        <InlineTool icon="⚙" spinner={isRunning()} pending="Running..." complete={title()} part={props.part}>
+          {title()}
+        </InlineTool>
+      }
+    >
+      <BlockTool title={`# ${title()}`} part={props.part}>
+        <code
+          filetype="markdown"
+          drawUnstyledText={false}
+          streaming={isRunning()}
+          syntaxStyle={syntax()}
+          content={output()}
+          conceal={ctx.conceal()}
+          fg={theme.text}
+        />
+      </BlockTool>
+    </Show>
   )
 }
 

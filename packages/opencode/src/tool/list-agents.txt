@@ -1,0 +1,5 @@
+List all subagents spawned by the current session with their current status.
+
+Returns a table showing each agent's slug, type, status (busy/idle/retry), title, elapsed time, and summary of changes.
+
+Use this to monitor the progress of spawned agents. For blocking wait behavior, use `wait_agents` instead.

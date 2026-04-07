@@ -27,6 +27,13 @@ import { Log } from "@/util/log"
 import { LspTool } from "./lsp"
 import { Truncate } from "./truncate"
 import { ApplyPatchTool } from "./apply_patch"
+import { SpawnAgentTool } from "./spawn-agent"
+import { ListAgentsTool } from "./list-agents"
+import { ReadAgentTool } from "./read-agent"
+import { SendFollowupTool } from "./send-followup"
+import { WaitAgentsTool } from "./wait-agents"
+import { FollowAgentTool } from "./follow-agent"
+import { AttachAgentTool } from "./attach-agent"
 import { Glob } from "../util/glob"
 import { pathToFileURL } from "url"
 import { Effect, Layer, ServiceMap } from "effect"
@@ -153,6 +160,13 @@ export namespace ToolRegistry {
       const lsp = yield* build(LspTool)
       const batch = yield* build(BatchTool)
       const plan = yield* build(PlanExitTool)
+      const spawn_agent = yield* build(SpawnAgentTool)
+      const list_agents = yield* build(ListAgentsTool)
+      const read_agent = yield* build(ReadAgentTool)
+      const send_followup = yield* build(SendFollowupTool)
+      const wait_agents = yield* build(WaitAgentsTool)
+      const follow_agent = yield* build(FollowAgentTool)
+      const attach_agent = yield* build(AttachAgentTool)
 
       const all = Effect.fn("ToolRegistry.all")(function* (custom: Tool.Info[]) {
         const cfg = yield* config.get()
@@ -206,6 +220,13 @@ export namespace ToolRegistry {
 
           return true
         })
+
+        // Coordinator tools are only available to the coordinator agent.
+        // They're not in the global list — added here based on agent name.
+        if (agent?.name === "coordinator") {
+          filtered.push(spawn_agent, list_agents, read_agent, send_followup, wait_agents, follow_agent, attach_agent)
+        }
+
         return yield* Effect.forEach(
           filtered,
           Effect.fnUntraced(function* (tool: Tool.Info) {
